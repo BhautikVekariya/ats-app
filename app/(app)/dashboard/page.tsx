@@ -26,6 +26,7 @@ import { subDays, format } from 'date-fns';
 export const metadata: Metadata = {
   title: 'Dashboard',
 };
+export const instant = false;
 
 export default async function DashboardPage() {
   const supabase = await createClient();

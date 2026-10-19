@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCallback, useRef } from 'react';
@@ -30,7 +31,11 @@ export function CandidateFiltersBar({
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+
       searchTimeout.current = setTimeout(() => {
         onChange({ search: value, page: 1 });
       }, 350);
@@ -45,10 +50,26 @@ export function CandidateFiltersBar({
     filters.dateTo !== '';
 
   function clearFilters() {
-    onChange({ search: '', stage: '', dateFrom: '', dateTo: '', page: 1 });
-    // Reset the input field
-    const input = document.getElementById('search-candidates') as HTMLInputElement;
-    if (input) input.value = '';
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+      searchTimeout.current = null;
+    }
+
+    onChange({
+      search: '',
+      stage: '',
+      dateFrom: '',
+      dateTo: '',
+      page: 1,
+    });
+
+    const input = document.getElementById(
+      'search-candidates'
+    ) as HTMLInputElement | null;
+
+    if (input) {
+      input.value = '';
+    }
   }
 
   return (
@@ -57,6 +78,7 @@ export function CandidateFiltersBar({
         {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+
           <Input
             id="search-candidates"
             placeholder="Search by name, email, or job title…"
@@ -69,19 +91,26 @@ export function CandidateFiltersBar({
         {/* Stage filter */}
         <Select
           value={filters.stage || 'all'}
-          onValueChange={(val) =>
-            onChange({ stage: val === 'all' ? '' : (val as Stage), page: 1 })
-          }
+          onValueChange={(val) => {
+            if (val == null) return;
+
+            onChange({
+              stage: val === 'all' ? '' : (val as Stage),
+              page: 1,
+            });
+          }}
         >
           <SelectTrigger className="w-full sm:w-44" id="filter-stage">
             <SlidersHorizontal className="w-4 h-4 mr-2 text-gray-400" />
             <SelectValue placeholder="All Stages" />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value="all">All Stages</SelectItem>
-            {STAGES.map((s) => (
-              <SelectItem key={s} value={s}>
-                {s}
+
+            {STAGES.map((stage) => (
+              <SelectItem key={stage} value={stage}>
+                {stage}
               </SelectItem>
             ))}
           </SelectContent>
@@ -91,22 +120,36 @@ export function CandidateFiltersBar({
         <Select
           value={`${filters.sortBy}-${filters.sortOrder}`}
           onValueChange={(val) => {
+            if (val == null) return;
+
             const [sortBy, sortOrder] = val.split('-') as [
               CandidateFilters['sortBy'],
               CandidateFilters['sortOrder']
             ];
+
             onChange({ sortBy, sortOrder, page: 1 });
           }}
         >
           <SelectTrigger className="w-full sm:w-48" id="sort-candidates">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
+
           <SelectContent>
-            <SelectItem value="application_date-desc">Newest First</SelectItem>
-            <SelectItem value="application_date-asc">Oldest First</SelectItem>
-            <SelectItem value="full_name-asc">Name A → Z</SelectItem>
-            <SelectItem value="full_name-desc">Name Z → A</SelectItem>
-            <SelectItem value="updated_at-desc">Last Updated</SelectItem>
+            <SelectItem value="application_date-desc">
+              Newest First
+            </SelectItem>
+            <SelectItem value="application_date-asc">
+              Oldest First
+            </SelectItem>
+            <SelectItem value="full_name-asc">
+              Name A → Z
+            </SelectItem>
+            <SelectItem value="full_name-desc">
+              Name Z → A
+            </SelectItem>
+            <SelectItem value="updated_at-desc">
+              Last Updated
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -114,19 +157,28 @@ export function CandidateFiltersBar({
       {/* Date range */}
       <div className="flex flex-col sm:flex-row gap-3 items-center">
         <div className="flex items-center gap-2 flex-1">
-          <span className="text-sm text-gray-500 whitespace-nowrap">Applied:</span>
+          <span className="text-sm text-gray-500 whitespace-nowrap">
+            Applied:
+          </span>
+
           <Input
             type="date"
             value={filters.dateFrom}
-            onChange={(e) => onChange({ dateFrom: e.target.value, page: 1 })}
+            onChange={(e) =>
+              onChange({ dateFrom: e.target.value, page: 1 })
+            }
             className="w-full"
             id="filter-date-from"
           />
+
           <span className="text-gray-400">—</span>
+
           <Input
             type="date"
             value={filters.dateTo}
-            onChange={(e) => onChange({ dateTo: e.target.value, page: 1 })}
+            onChange={(e) =>
+              onChange({ dateTo: e.target.value, page: 1 })
+            }
             className="w-full"
             id="filter-date-to"
           />
@@ -145,8 +197,10 @@ export function CandidateFiltersBar({
               Clear filters
             </Button>
           )}
+
           <span className="text-sm text-gray-500">
-            {totalCount.toLocaleString()} result{totalCount !== 1 ? 's' : ''}
+            {totalCount.toLocaleString()} result
+            {totalCount !== 1 ? 's' : ''}
           </span>
         </div>
       </div>

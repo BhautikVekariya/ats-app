@@ -88,7 +88,7 @@ export function Sidebar({ onClose }: SidebarProps) {
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-gray-200 flex-shrink-0">
-        <p className="text-xs text-gray-400">© 2024 EarlyJobs ATS</p>
+        <p className="text-xs text-gray-400">© 2026 EarlyJobs ATS</p>
       </div>
     </aside>
   );

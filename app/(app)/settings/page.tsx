@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = { title: 'Settings' };
-
+export const instant = false;
 export default async function SettingsPage() {
   const supabase = await createClient();
   const {

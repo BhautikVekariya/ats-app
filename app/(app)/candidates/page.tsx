@@ -9,21 +9,24 @@ export const metadata: Metadata = {
   title: 'Candidates',
 };
 
+export const instant = false;
+
 const PAGE_SIZE = 10;
 
 export default async function CandidatesPage() {
   const supabase = await createClient();
 
-  // Check the current user's session
+  // Get the currently authenticated user.
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
     redirect('/login');
   }
 
-  // Load the first page of candidates for the authenticated user
+  // Fetch only candidates belonging to this authenticated user.
   const { data, count, error } = await supabase
     .from('candidates')
     .select('*', { count: 'exact' })
@@ -35,10 +38,11 @@ export default async function CandidatesPage() {
     console.error('Failed to fetch candidates:', error.message);
   }
 
+  const candidates = (data ?? []) as Candidate[];
   const totalCount = count ?? 0;
 
   const initialData: PaginatedCandidates = {
-    data: (data ?? []) as Candidate[],
+    data: candidates,
     count: totalCount,
     page: 1,
     pageSize: PAGE_SIZE,
